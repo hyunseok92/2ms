@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="studentMapper">
+
+
+	<resultMap id="resultstudent" type="student">
+		<result property="studentCode" column="STUDENT_CODE" />
+		<result property="name" column="NAME" />
+		<result property="resident_Number" column="RESIDENT_NUMBER" />
+		<result property="email" column="EMAIL" />
+		<result property="id" column="ID" />
+		<result property="pwd" column="PWD" />
+		<result property="modified_Date" column="MODIFIED_DATE" />
+		<result property="eduation" column="EDUATION" />
+		<result property="school" column="SCHOOL" />
+		<result property="inactive_OR_Not" column="INACTIVE_OR_NOT" />
+		<result property="class_code" column="CLASS_CODE" />
+		<result property="phone" column="PHONE" />
+	</resultMap>
+	
+	
+
+	<select id="selectLogin" parameterType="Student" resultMap="resultstudent">
+		select * from student 
+		where ID = #{ id } and PWD = #{ pwd }
+	</select>
+	
+	<select id="selectStudent" parameterType="string" resultMap="resultstudent">
+		select * from student where ID = #{ id } and inactive_OR_Not = 'Y'
+	</select>
+	
+	
+	<select id="selectCountStudent" parameterType="string" resultType="_int">
+		select count (*) from student where ID = #{ id } 
+	</select>
+
+	<select id="selectStudent2" parameterType="string" resultMap="resultstudent">
+		select * from student where name like  '%' || #{ name } || '%' 
+	</select>
+	
+	<select id="searchStudent" parameterType="Student" resultMap="resultstudent">
+		select * from student where name = #{name} and RESIDENT_NUMBER = #{resident_Number}
+	</select>
+	
+	<select id="selectStudentList" parameterType = "Paging" resultMap="resultstudent">
+		select * from 
+		(select rownum rnum, STUDENT_CODE, NAME, RESIDENT_NUMBER, EMAIL, ID, EDUATION, SCHOOL,CLASS_CODE, PHONE , INACTIVE_OR_NOT
+				 from (select st.student_code, st.name, st.phone, st.resident_number, st.email, st.id, st.eduation, st.school, st.INACTIVE_OR_NOT, 
+				 class.class_name as class_code
+				  from student st
+				  left join designed_class class
+				  on st.class_code = class.class_code order by name asc))
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<select id="selectStudentListCount" resultType="_int">
+      SELECT COUNT(*) FROM STUDENT
+   </select>
+   
+   <select id="searchStudentListCount" parameterType="Search" resultType="_int">
+   	 
+      SELECT COUNT(*) FROM STUDENT 
+      <if test="keyword != null and keyword2 == null">
+      	      where name like '%' || #{keyword} || '%'
+      </if>
+      <if test="keyword == null and keyword2 != null">
+      		where class_code = #{keyword2}
+      </if>
+      <if test="keyword != null and keyword2 != null">
+      		where name like '%' || #{keyword} || '%' and class_code = #{keyword2}
+      </if>
+   </select>
+   
+   <select id="selectSearchStudentList" parameterType="Search" resultMap="resultstudent">
+   		select * from 
+		(select rownum rnum, STUDENT_CODE, NAME, RESIDENT_NUMBER, EMAIL, ID, EDUATION, SCHOOL,CLASS_CODE, PHONE, INACTIVE_OR_NOT 
+				 from (select st.student_code, st.name, st.phone, st.resident_number, st.email, st.id, st.eduation, st.school, st.inactive_OR_Not, class.class_name as class_code from 
+				 student st left join designed_class class on st.class_code = class.class_code 						
+	 <if test="keyword != null and keyword2 == null">
+      	      where name like '%' || #{keyword} || '%'
+      </if>
+      <if test="keyword == null and keyword2 != null">
+      		where st.class_code = #{keyword2}
+      </if>
+      <if test="keyword != null and keyword2 != null">
+      		where name like '%' || #{keyword} || '%' and st.class_code = #{keyword2} 
+      </if>	
+        order by name asc))
+		where rnum between #{startRow} and #{endRow}	
+   </select>
+   
+   <select id="selectClassStudentList" parameterType="string" resultMap="resultstudent">
+   		select * from student where class_code = #{class_code} order by name asc
+   </select>
+   
+	<insert id="insertStudent" parameterType="Student">
+		insert into student 
+
+		values (student_seq.nextval, #{ name }, #{ resident_Number }, #{ email }, 
+		CONCAT('S', student_seq.nextval), #{ pwd }, sysdate, 
+		#{ eduation },#{ school }, 'Y', #{ class_code }, #{ phone })
+	</insert>
+	
+	<update id="updateStudent" parameterType="Student">
+		update student 
+		set  NAME = #{ name }, PWD = #{pwd},
+			PHONE = #{ phone }, EMAIL = #{ email } , MODIFIED_DATE = sysdate 
+		where ID = #{ id }
+	</update>	
+	
+	<update id="updateStudent2" parameterType="string">
+		update student 
+		set   PWD = #{pwd},
+			 MODIFIED_DATE = sysdate 
+		where ID = #{id}
+	</update>
+	
+	<update id="updateStudentStatus" parameterType="Student">
+		 update student set inactive_OR_Not = #{inactive_OR_Not}
+    	 where student_code = #{studentCode}
+	</update>
+	
+	<select id="selectCheckId" parameterType="string" resultType="_int">
+		select count(id) from student where id = #{ id }
+	</select>
+
+	<delete id="deleteStudent" parameterType="string">
+		delete from student where id = #{ id }
+	</delete>
+</mapper>

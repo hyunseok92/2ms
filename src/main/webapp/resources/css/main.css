@@ -1,0 +1,189 @@
+
+*{
+	margin : 0;
+	padding : 0;
+}
+
+body {
+	margin : 0;
+	z-index : 0;
+}
+
+
+a {
+  text-decoration: none;
+}
+
+.container{
+	width : 100%;
+}
+
+/* main nav bar css start */
+.main_menu_block{
+	background-color : rgb(51,153,51);
+	width : 100%;
+	height : 70px;
+	display: flex;
+	justify-content: center;
+}
+
+.main_title{
+	position : fixed;
+	justify-content: center;
+	display : flex;
+	align-items : center;
+	height : 70px;
+	font-family : 'wilder';
+	font-size : 50px;
+	color : white;
+	width:200px;
+	left:0px;
+}
+
+.main_menu{
+	display : inline-flex;
+	
+	position : fixed;
+	
+	height : 70px;
+	align-items : center;
+}
+
+.main_menu_lst{
+	display : inline;
+	font-family : 'munhwa';
+	margin-left:20px;
+	margin-right:20px;
+	color : white;
+	font-size : 17px;
+	padding-bottom : 33px;
+	padding-right : 25px;
+	padding-left : 25px;
+}
+.main_menu_lst > a{
+	color : white;
+}
+.main_log{
+	display : inline-flex;
+	position : fixed;
+	left : 80%;
+	align-items : center;
+	height : 70px;
+}
+
+
+
+.main_login{
+	display : inline;
+	font-family : 'munhwa';
+	color : white;
+}
+
+.main_logout{
+	display : inline;
+	font-family : 'munhwa';
+	color : white;
+	margin-left : 20px;
+}
+.main_profile{
+	display : inline;
+	width : 30px;
+}
+.main_menu_block{
+	position : fixed;
+	z-index : 2;
+}
+/* main nav bar css end */
+
+/* main nav bar sub menu css start */
+.main_submenu_hidden{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color : white;
+	height : 40px;
+	border-bottom:rgba(51, 105, 30, 0.15) solid 1px;
+	z-index : 2;
+	transition: top ease-in-out .3s; 
+	position:fixed;
+	top: 0px;
+	width : 100%;
+  
+   /* 애니메이션 효과 설정 */
+   
+	
+}
+.nav_sub{
+	display : inline;
+	margin-left : 20px;
+	margin-right : 20px;
+	padding-left : 10px;
+	padding-right : 10px;
+	border-bottom: 2px solid rgba(51, 105, 30, 0.0);
+	transition: border-bottom ease-in-out .3s; 
+
+}
+.nav_sub:hover{
+	border-bottom: 2px solid rgba(51, 105, 30, 0.4);
+}
+
+.nav_sub > a{
+	font-family : 'munhwa';
+	color : gray;
+	
+}
+.main_submenu{
+	position : fixed;
+	z-index : 1;
+}
+/* main nav bar sub menu css end */
+
+/* main side bar menu start */
+.submenu_side{
+	position: absolute;
+	display: flex;
+	background-color: #d3d3d3;
+	height: 100%;
+	width : 200px;
+	justify-content: center;
+}
+.side_menu{
+	height: 100%;
+	font-size : 18px;
+	width : 100%;
+	justify-content: center;
+	text-align: center;
+	display:flex;
+	top: 120px;
+    position: relative;
+}
+.sub_side_menu > a{
+	font-family: 'munhwa';
+	color: black;
+	width: 100%;
+}
+.sub_side_menu > a:hover{
+	color:rgb(0,80,0);
+	background-color: rgba(51,153,51,0.1);
+}
+.sub_side_menu{
+	display:flex;
+	justify-content: center;
+	width: 100%;
+}
+.sub_side_title{
+	font-family: 'munhwa';
+	display: flex;
+	position : relative;
+	justify-content: center;
+	background-color : rgba(51,153,51,0.3);
+	text-align: center;
+	font-size : 20px;
+}
+
+.btn-gradient {
+  background-color : green;
+}
+.btn-gradient:hover {
+	background-color : yellow;
+}

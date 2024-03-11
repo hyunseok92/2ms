@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 마이바티스는 sql 구문에 사용되는 값이 NULL 이면 에러 발생함, NULL 을 사용할 수 있게 하려면 -->
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL"/>
+		<setting name="cacheEnabled" value="false"/>
+	</settings>
+
+	<typeAliases>
+		<!-- 존재하지 않는 클래스를 등록하면 톰켓 구동 안 됨 -->		
+		<typeAlias type="org.ict.lms.common.Paging" alias="Paging" />
+		<typeAlias type="org.ict.lms.common.Search" alias="Search" />
+		<typeAlias type="org.ict.lms.subject.model.vo.Subject" alias="Subject" />
+		<typeAlias type="org.ict.lms.article.model.vo.Article" alias="Article" />
+		<typeAlias type="org.ict.lms.course.model.vo.Course" alias="Course" />
+		<typeAlias type="org.ict.lms.notice.model.vo.Notice" alias="Notice" />
+		<typeAlias type="org.ict.lms.designedsubject.model.vo.DesignedSubject" alias="DesignedSubject" />
+		<typeAlias type="org.ict.lms.teacher.model.vo.Teacher" alias="Teacher" />
+		<typeAlias type="org.ict.lms.quiz.model.vo.Quiz_q" alias="Quiz_q" />
+		<typeAlias type="org.ict.lms.quiz.model.vo.Quiz_a" alias="Quiz_a" />
+		<typeAlias type="org.ict.lms.chat.model.vo.Chatting" alias="Chatting" />
+		<typeAlias type="org.ict.lms.chat.model.vo.ChatRooms" alias="ChatRooms" />
+		<typeAlias type="org.ict.lms.chat.model.vo.ChatList" alias="ChatList" />
+		<typeAlias type="org.ict.lms.formdata.model.vo.FormData" alias="FormData"/>
+		<typeAlias type="org.ict.lms.student.model.vo.Student" alias="Student"/>
+		<typeAlias type="org.ict.lms.tTest.model.vo.TTest" alias="TTest"/>
+    	<typeAlias type="org.ict.lms.test.model.vo.Test" alias="Test" />
+    	<typeAlias type="org.ict.lms.sTest.model.vo.STest" alias="STest" />
+    	<typeAlias type="org.ict.lms.att.model.vo.Attendence" alias="Attendence" />
+    	<typeAlias type="org.ict.lms.survey.model.vo.Survey" alias="Survey" />
+
+    	<typeAlias type="org.ict.lms.homework.model.vo.Homework" alias="Homework" />
+
+
+    	<typeAlias type="org.ict.lms.tHomework.model.vo.THomework" alias="THomework" />
+    	<typeAlias type="org.ict.lms.survey.model.vo.StartSurvey" alias="StartSurvey" />
+    	<typeAlias type="org.ict.lms.survey.model.vo.ResultSurvey" alias="ResultSurvey" />
+    	<typeAlias type="org.ict.lms.survey.model.vo.ChartSurvey" alias="ChartSurvey" />
+    	
+    	
+    	
+
+	</typeAliases>
+	
+	<mappers>
+		<!-- 존재하지 않는 파일을 등록하면, 톰켓 구동 안 됨 -->
+		<mapper resource="mappers/ttest-mapper.xml" />
+		<mapper resource="mappers/subject-mapper.xml" />
+		<mapper resource="mappers/article-mapper.xml" />
+		<mapper resource="mappers/teacher-mapper.xml" />
+		<mapper resource="mappers/test-mapper.xml" />
+		<mapper resource="mappers/stest-mapper.xml" /> 
+		<mapper resource="mappers/form-mapper.xml" /> 
+		<mapper resource="mappers/quiz-mapper.xml" />
+		<mapper resource="mappers/chat-mapper.xml" />
+		<mapper resource="mappers/attendence-mapper.xml"/>
+		<mapper resource="mappers/student-mapper.xml" />
+		<mapper resource="mappers/course-mapper.xml" />
+		<mapper resource="mappers/designedSubject-mapper.xml" />
+		<mapper resource="mappers/survey-mapper.xml"/>
+		<mapper resource="mappers/thomework-mapper.xml"/>
+
+		<mapper resource="mappers/homework-mapper.xml"/>
+
+		<mapper resource="mappers/notice-mapper.xml"/>
+	</mappers>
+</configuration>
+
+
+
+
+
+
+
+

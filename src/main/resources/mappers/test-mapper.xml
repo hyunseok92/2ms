@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="testMapper">
+	<resultMap type="Test" id="resultTest">
+		<result column="TEST_CODE" property="testCode" />
+		<result column="TEST_NO" property="testNo" />
+		<result column="TEST_Q" property="testQ" />
+		<result column="TEST_Q1" property="testQ1" />
+		<result column="TEST_Q2" property="testQ2" />
+		<result column="TEST_Q3" property="testQ3" />
+		<result column="TEST_Q4" property="testQ4" />
+		<result column="TEST_RA" property="testRA" />
+		<result column="TEST_SCORE" property="testScore" />
+		<result column="ABILITY" property="ability" />
+	</resultMap>
+	<select id="selectLastProb" parameterType="string" resultMap="resultTest">
+		select test_no from (select * from test order by test_no desc) WHERE ROWNUM = 1 and test_code = #{ testCode }
+	</select>
+	
+	<select id="selectMprodbMethod" parameterType="string" resultMap="resultTest">
+		select * from(select * from test order by test_no asc)  where test_code = #{ testCode }
+	</select>
+	
+	<insert id="insertProbMehod" parameterType="Test">
+		<if test="testQ1 == null">
+		insert into test (test_code, test_no, test_q, test_ra, test_score, ability) values (#{testCode}, #{testNo}, #{testQ}, #{testRA}, #{testScore}, #{ability})
+		</if>
+		<if test="testQ1 != null">
+		insert into test values (#{testCode}, #{testNo}, #{testQ}, #{testQ1}, #{testQ2}, #{testQ3}, #{testQ4}, #{testRA}, #{testScore}, #{ability})
+		</if>
+	</insert>
+	<delete id="deleteMprop" parameterType="Test">
+		delete from test where TEST_CODE = #{testCode} and TEST_NO = #{testNo}
+	</delete>
+	<delete id="deleteProps" parameterType="string">
+		delete from test where TEST_CODE = #{testCode}
+	</delete>
+	<update id="updateMprop" parameterType="Test">
+	<if test="testQ1 == null">
+		update test set TEST_Q = #{testQ}, TEST_RA = #{testRA}, TEST_SCORE = #{testScore}, ABILITY = #{ability} where TEST_CODE = #{testCode} and TEST_NO = #{testNo}
+	</if>
+	<if test="testQ1 != null">
+		update test set TEST_Q = #{testQ}, TEST_Q1 = #{testQ1}, TEST_Q2 = #{testQ2}, TEST_Q3 = #{testQ3}, TEST_Q4 = #{testQ4}, TEST_RA = #{testRA}, TEST_SCORE = #{testScore}, ABILITY = #{ability} where TEST_CODE = #{testCode} and TEST_NO = #{testNo}
+	</if>
+	</update>
+	
+	<update id="updateDTestNo" parameterType="Test">
+		update test set TEST_NO = #{testNo}-1 where TEST_CODE = #{testCode} and TEST_NO = #{testNo}
+	</update>
+</mapper>

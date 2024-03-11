@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ttestMapper">
+	<resultMap type="TTest" id="resultTTest">
+		<result column="TEST_CODE" property="testCode" />
+		<result column="SUBJECT_CODE" property="subjectCode" />
+		<result column="TEST_CONT" property="testCount" />
+		<result column="TEST_STARTDATE" property="testStartDate" />
+		<result column="TEST_ENDDATE" property="testEndDate" />
+		<result column="TEST_TYPE" property="testType" />
+		<result column="CLASS_CODE" property="classCode" />
+		<result column="PROF_CODE" property="teacherCode" />
+		<result column="CLASS_NAME" property="className" />
+		<result column="SUBJECT_NAME" property="subjectName" />
+		<result column="NAME" property="teacherName" />
+		<result column="ABILITY_NUM" property="abilityNum" />
+		<result column="ABILITY" property="ability" />
+	</resultMap>
+	
+	<select id="selectClass" parameterType="string" resultMap="resultTTest">		
+		select class_code, class_name, prof_code
+		from designed_class
+		where prof_code = #{ teacherCode } and prof_confirm = 'Y'
+	</select>
+	<select id="selectOpenTest" parameterType="string" resultMap="resultTTest">
+		select *
+		from t_test
+		where SUBJECT_CODE = #{subjectCode}
+	</select>
+	
+	<select id="selectClass1" resultMap="resultTTest">
+			select class_code, class_name, prof_code from designed_class	
+	</select>
+	
+	<select id="selectsubClass" parameterType="string" resultMap="resultTTest">
+		SELECT subject_code, class_code, subject.subject_name, class_name
+		FROM designed_subject
+		LEFT JOIN subject USING(subject_code)
+		LEFT JOIN designed_class USING(class_code)
+		WHERE class_code = #{classCode}
+		AND subject_code IS NOT NULL
+		AND subject.subject_name IS NOT NULL
+	</select>
+	
+	<select id="selectTestCode" parameterType="string" resultMap="resultTTest">
+		select *
+		from t_test
+		left join subject using (subject_code)
+		left join designed_class using (class_code)
+		where test_code = #{ testCode }
+	</select>
+	
+	<select id="selectAbility" parameterType="string" resultMap="resultTTest">
+		select DISTINCT *
+		from ability
+		where subject_code = #{ subjectCode }
+		
+	</select>
+	
+	<select id="selectLastTTest" resultType="string">
+		SELECT test_code 
+		FROM(
+    			SELECT * 
+    			FROM t_test
+    			ORDER BY TO_NUMBER(test_code) DESC)
+		WHERE ROWNUM = 1
+	</select>
+	<select id="selectTtestView" parameterType="Search" resultMap="resultTTest">
+		<![CDATA[
+		select *
+		from (select ROWNUM RNUM, subject_name, class_name, test_code, test_startdate, test_enddate, test_cont, class_code, subject_code, test_type
+		from (select * from t_test
+		left join subject using (subject_code)
+		left join designed_class using (class_code)
+		where CLASS_CODE = #{keyword} and test_cont > 0 and test_startdate < sysdate
+		order by test_enddate desc, test_startdate desc))
+		where rnum between #{ startRow } and #{ endRow }
+		 ]]>
+	</select>
+	<select id="selectTtestViewCount" parameterType="string" resultType="_int">
+		<![CDATA[
+		select count(*)
+		from(select subject_name, class_name, test_code, test_startdate, test_enddate, test_cont, class_code, subject_code, test_type
+		from t_test
+		left join subject using (subject_code)
+		left join designed_class using (class_code)
+		where CLASS_CODE = #{classCode} and test_cont > 0 and test_startdate < sysdate)
+		 ]]>
+	</select>
+	<select id="testResultClassList" parameterType="Search" resultMap="resultTTest">
+		<![CDATA[
+			select *
+			from (select ROWNUM RNUM, subject_name, class_name, test_code, test_startdate, test_enddate, test_cont, class_code, subject_code, test_type
+			from (select * from t_test
+			left join subject using (subject_code)
+			left join designed_class using (class_code)
+			where CLASS_CODE = #{keyword} and test_cont > 0 and test_startdate < sysdate
+			order by test_enddate desc, test_startdate desc))
+			where rnum between #{ startRow } and #{ endRow }
+		]]>
+	</select>
+	
+	<insert id="insertTTest" parameterType="TTest">
+		insert into t_test
+		values (test_seq.nextval, #{subjectCode}, null, #{testStartDate}, #{testEndDate}, #{testType}, #{classCode}, #{teacherCode}) 
+	</insert>
+	
+	<update id="updateTestCount" parameterType="TTest">
+		update t_test set TEST_CONT	= #{testCount} where TEST_CODE = #{testCode}
+	</update>
+	<delete id="deleteTTest" parameterType="TTest">
+		delete from t_test where TEST_CODE = #{testCode}
+	</delete>
+	<update id="updateTTest" parameterType="TTest">
+		update t_test set TEST_STARTDATE = #{testStartDate}, TEST_ENDDATE = #{testEndDate} where TEST_CODE = #{testCode}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

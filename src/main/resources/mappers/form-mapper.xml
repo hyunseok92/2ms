@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="formDataMapper">
+
+	<resultMap type="FormData" id="FormData">
+		<result property="form_no" column="FORM_NO" />
+		<result property="form_title" column="FORM_TITLE" />
+		<result property="form_author" column="FORM_AUTHOR" />
+		<result property="form_date" column="FORM_DATE" />
+		<result property="form_content" column="FORM_CONTENT" />
+		<result property="readcount" column="READCOUNT" />
+		<result property="originalfilename" column="ORIGINALFILENAME" />
+		<result property="renamefilename" column="RENAMEFILENAME" />
+		<result property="form_author_name" column="FORM_AUTHOR_NAME" />
+	</resultMap>
+	
+	<select id="selectFormDataList" resultMap="FormData">
+		SELECT *
+		FROM FORM
+		ORDER BY FORM_DATE DESC
+	</select>
+	
+	<select id="selectForm" parameterType="string" resultType="FormData">
+		SELECT * 
+		FROM FORM
+		WHERE FORM_NO = #{ form_no }
+	</select>
+	
+
+	<select id="selectNew5Form" resultMap="FormData">
+		<![CDATA[
+		SELECT * 
+		FROM (SELECT ROWNUM RNUM, FORM_NO, FORM_TITLE, FORM_DATE 
+		FROM ( SELECT * FROM FORM  
+		       ORDER BY FORM_DATE DESC)) 
+		WHERE RNUM >= 1 AND RNUM <= 5
+		]]>
+	</select>
+
+	<insert id="insertFormData" parameterType="FormData">
+		INSERT INTO FORM
+		VALUES((FORM_SEQ.NEXTVAL), #{ form_title }, #{ form_author }, SYSDATE, #{ form_content }, 0, #{ originalfilename }, #{ renamefilename }, #{ form_author_name })
+	</insert>
+	
+	<update id="updateFormData" parameterType="FormData">
+		UPDATE FORM 
+		SET FORM_TITLE = #{ form_title }, FORM_CONTENT = #{ form_content }, ORIGINALFILENAME = #{ originalfilename }, RENAMEFILENAME = #{ renamefilename }
+		WHERE FORM_NO = #{ form_no }
+	</update>
+	
+	<update id="updateFormReadcount" parameterType="FormData">
+		UPDATE FORM
+		SET READCOUNT = #{ readcount }
+		WHERE FORM_NO = #{ form_no }
+	</update>
+	
+	<delete id="deleteFormData" parameterType="string">
+		DELETE FROM FORM
+		WHERE FORM_NO = #{ form_no }
+	</delete>
+
+</mapper>

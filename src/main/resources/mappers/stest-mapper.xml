@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="stestMapper">
+	<resultMap type="STest" id="resultSTest">
+		<result column="TEST_CODE" property="testCode" />
+		<result column="SCORE_SUM" property="scoreSum" />
+		<result column="TEST_DATE" property="testDate" />
+		<result column="TEST_A" property="testA" />
+		<result column="TEST_YN" property="testYN" />
+		<result column="TEST_SCORE" property="testScore" />
+		<result column="STUDENT_CODE" property="studentCode" />
+		<result column="CLASS_CODE" property="classCode" />
+		<result column="NAME" property="studentName" />
+		<result column="TEST_NO" property="testNo" />
+		<result column="TEST_OK" property="testOK" />
+		<result column="TEST_Q" property="testQ" />
+		<result column="TEST_RA" property="testRA" />
+		<result column="AVILITY" property="ability" />
+	</resultMap>
+	<select id="selectStestView" parameterType="Search" resultType="string">
+		select CLASS_CODE
+		from student
+		where STUDENT_CODE = #{studentCode}
+	</select>
+	
+	<select id="selectSTProdList">
+		select *
+		from s_test
+		where test_code = ${testCode}
+	</select>	
+	<select id="selectStestTestCode" parameterType="string" resultMap="resultSTest">
+		<![CDATA[
+		SELECT t_test.*, TEST_YN
+		FROM t_test
+		INNER JOIN (
+    		SELECT TEST_CODE, MAX(TEST_YN) AS TEST_YN
+    		FROM s_test
+    		where student_code = ${studentCode}
+		    GROUP BY TEST_CODE
+  		  HAVING COUNT(TEST_CODE) >= 1
+		) s ON t_test.TEST_CODE = s.TEST_CODE
+		]]>
+
+	</select>
+	<select id="selectStestResult" parameterType="STest" resultMap="resultSTest">
+		select *
+		from (select * from s_test order by test_no asc)
+		where test_code = #{testCode} and student_code = #{studentCode}
+	</select>
+	<select id="selectTestClearStudent" parameterType="string" resultMap="resultSTest">
+		SELECT DISTINCT STUDENT_CODE, TEST_CODE, TEST_DATE, score_sum, test_ok
+		FROM s_test
+		where test_code = #{testCode}
+	</select>
+	<select id="selectMarkTestMethod" parameterType="STest" resultMap="resultSTest">
+		select test_code, test.test_q, test.test_no, test_ra, test_a, test_score, ability, test_date
+		from test
+		left join s_test using(test_code)
+		where student_code = #{studentCode} and test_code = #{testCode} and test.test_no = s_test.test_no
+		order by test.test_no
+	</select>
+	<insert id="insertSTestMprop">
+		insert into s_test (test_code, TEST_DATE, TEST_A, TEST_YN, STUDENT_CODE, TEST_NO, test_ok) values (#{testCode}, sysdate, #{testA}, #{testYN}, #{studentCode}, #{testNo}, #{testOK})
+	</insert>
+	<update id="updateSTestMpropSumScore" parameterType="STest">
+		update s_test set SCORE_SUM = #{scoreSum} where STUDENT_CODE = #{studentCode} and TEST_CODE = #{testCode}
+	</update>
+	<update id="updateMarkTestResult" parameterType="STest">
+		update s_test set test_ok = #{testOK}, test_yn = #{testYN} where student_code = #{studentCode} and test_code = #{testCode} and test_no = #{testNo}
+	</update>
+	<delete id="deleteSTestMethod" parameterType="string">
+		delete from s_test where TEST_CODE = #{testCode}
+	</delete>
+</mapper>
+

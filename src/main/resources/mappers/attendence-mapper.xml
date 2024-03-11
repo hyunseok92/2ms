@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="attMapper">
+
+	<resultMap type="Attendence" id="resultAttList">
+		<result property="student_code" column="STUDENT_CODE" />
+		<result property="class_code" column="CLASS_CODE" />
+		<result property="attdate" column="ATTDATE" />
+		<result property="status" column="STATUS" />
+		<result property="note" column="NOTE" />
+		<result property="name" column="name" />
+		<result property="resident_Number" column="resident_Number" />
+		<result property="phone" column="phone" />
+		<result property="eduation" column="eduation" />
+		<result property="school" column="school" />
+	</resultMap>
+
+	<select id="selectAttendenceList" parameterType="string" resultMap="resultAttList">
+		select at.student_code, at.class_code, trunc(at.attdate) as attdate, at.status, at.note, 
+		st.name as name, st.resident_number, st.eduation, st.school, st.phone  
+		from Attendence at 
+		left join student st on at.student_code = st.student_code 
+		where at.class_code = #{class} 
+		and attDate BETWEEN  TO_DATE(TO_CHAR(TRUNC(SYSDATE), 'YYYYMMDD') || '000000', 'YYYYMMDDHH24MISS') 
+		AND TO_DATE(TO_CHAR(TRUNC(SYSDATE), 'YYYYMMDD') || '235959', 'YYYYMMDDHH24MISS') 
+		order by name asc
+	</select>
+	
+	<select id="searchDateAttendenceList" parameterType="Attendence" resultMap ="resultAttList">
+		select at.student_code, at.class_code, trunc(at.attdate) as attdate, at.status, at.note,
+		st.name, st.resident_number, st.eduation, st.school, st.phone  
+		from Attendence at
+		left join student st on at.student_code = st.student_code
+		where at.class_code = #{class_code}
+		and attDate between to_date(#{attdate} || '000000', 'YYYYMMDDHH24MISS') 
+		AND to_date(#{attdate} || '235959', 'YYYYMMDDHH24MISS') order by name asc
+	</select>
+	
+	
+	<select id="serachMonthStartEnd" parameterType="Attendence" resultMap = "resultAttList">
+		select attdate, status, note from attendence 
+		where student_code = #{student_code}
+		and attdate 
+		between to_date(#{attdate} || '01000000', 'YYYYMMDDHH24MISS') 
+		AND to_date(TO_CHAR(LAST_DAY(TO_DATE(#{attdate}, 'YYYYMM')), 'YYYYMMDD') 
+		|| '000000', 'YYYYMMDDHH24MISS')
+		order by attdate
+	</select>
+	
+	
+	<select id="searchMonthAttList" parameterType="Attendence" resultMap ="resultAttList">
+		select attdate, status, note  
+		from Attendence 
+		where student_code = #{student_code}
+		and attDate between to_date(#{attdate} || '01000000', 'YYYYMMDDHH24MISS') AND to_date(to_char(sysdate, 'YYYYMMDD') || '235959', 'YYYYMMDDHH24MISS') order by attdate
+	</select>
+	
+	
+	
+	<update id="updateAttAllStatus" parameterType="Attendence">
+		update Attendence set status='출석'
+		where attDate between to_date(#{attdate} || '000000', 'YYYYMMDDHH24MISS') AND to_date(#{attdate} || '235959', 'YYYYMMDDHH24MISS')
+	</update>
+	
+	<update id="updateAttRow" parameterType="Attendence">
+		update Attendence set status = #{status}, note = #{note}
+		where student_code = #{student_code}
+		
+	</update>
+	
+</mapper>

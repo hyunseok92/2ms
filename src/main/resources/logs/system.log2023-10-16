@@ -1,0 +1,46 @@
+[14:32:53][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[14:32:54][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 814 ms
+[14:32:54][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[14:32:55][INFO ][FrameworkServlet.java: 547] - Completed initialization in 904 ms
+[14:33:30][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[14:33:31][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 819 ms
+[14:33:31][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[14:33:32][INFO ][FrameworkServlet.java: 547] - Completed initialization in 894 ms
+[15:15:03][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[15:15:04][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 871 ms
+[15:15:04][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[15:15:05][INFO ][FrameworkServlet.java: 547] - Completed initialization in 932 ms
+[15:48:43][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[15:48:44][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 739 ms
+[15:48:44][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[15:48:45][INFO ][FrameworkServlet.java: 547] - Completed initialization in 850 ms
+[15:48:53][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[15:48:54][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 864 ms
+[15:48:54][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[15:48:55][INFO ][FrameworkServlet.java: 547] - Completed initialization in 988 ms
+[15:49:37][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[15:49:37][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 860 ms
+[15:49:37][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[15:49:38][INFO ][FrameworkServlet.java: 547] - Completed initialization in 954 ms
+[16:27:13][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[16:27:13][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 734 ms
+[16:27:13][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[16:27:14][INFO ][FrameworkServlet.java: 547] - Completed initialization in 822 ms
+[16:28:40][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[16:28:41][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 876 ms
+[16:28:41][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[16:28:41][INFO ][FrameworkServlet.java: 547] - Completed initialization in 954 ms
+[16:39:19][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[16:39:19][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 819 ms
+[16:39:20][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[16:39:21][INFO ][FrameworkServlet.java: 547] - Completed initialization in 983 ms
+[16:56:17][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[16:56:18][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 852 ms
+[16:56:18][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[16:56:19][INFO ][FrameworkServlet.java: 547] - Completed initialization in 963 ms
+[17:54:36][INFO ][ContextLoader.java: 271] - Root WebApplicationContext: initialization started
+[17:54:37][INFO ][ContextLoader.java: 307] - Root WebApplicationContext initialized in 836 ms
+[17:54:37][INFO ][FrameworkServlet.java: 525] - Initializing Servlet 'appServlet'
+[17:54:38][INFO ][FrameworkServlet.java: 547] - Completed initialization in 908 ms
+[21:33:05][WARN ][DispatcherServlet.java: 1278] - No mapping for GET /lms/chatroom/.do
+[21:33:06][WARN ][DispatcherServlet.java: 1278] - No mapping for GET /lms/chatroom/.do

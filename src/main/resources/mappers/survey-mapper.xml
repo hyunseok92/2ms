@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="surveyMapper">
+
+	<resultMap type="Survey" id="resultSurveyList">
+		<result property="survey_no" column="SURVEY_NO" />
+		<result property="survey_cate" column="SURVEY_CATE" />
+		<result property="survey_type" column="SURVEY_TYPE" />
+		<result property="survey_date" column="SURVEY_DATE" />		
+		<result property="survey1" column="SURVEY1" />
+		<result property="survey2" column="SURVEY2" />
+		<result property="survey3" column="SURVEY3" />
+		<result property="survey4" column="SURVEY4" />
+		<result property="survey5" column="SURVEY5" />
+	</resultMap>
+	
+	<resultMap type="ResultSurvey" id="resultSurvey">
+		<result property="survey_no" column="SURVEY_NO" />
+		<result property="survey_cate" column="SURVEY_CATE" />
+		<result property="survey_type" column="SURVEY_TYPE" />
+		<result property="answer1" column="ANSWER1" />
+		<result property="answer2" column="ANSWER2" />
+		<result property="answer3" column="ANSWER3" />
+		<result property="answer4" column="ANSWER4" />	
+		<result property="answer5" column="ANSWER5" />	
+		<result property="class_code" column="CLASS_CODE" />	
+		<result property="student_code" column="STUDENT_CODE" />	
+	</resultMap>
+	
+	<resultMap type="ChartSurvey" id="resultChart">
+		<result property="survey1" column="SURVEY1" />
+		<result property="survey2" column="SURVEY2" />
+		<result property="survey3" column="SURVEY3" />
+		<result property="survey4" column="SURVEY4" />
+		<result property="survey5" column="SURVEY5" />
+		<result property="answer1" column="ANSWER1" />
+		<result property="answer2" column="ANSWER2" />
+		<result property="answer3" column="ANSWER3" />
+		<result property="answer4" column="ANSWER4" />
+		<result property="answer5" column="ANSWER5" />		
+	</resultMap>
+
+	<select id="selectMaxNo" resultType="_int">
+		select NVL(MAX(survey_no), 0) FROM survey
+	</select>
+	
+	<select id="selectSurveyListCount" resultType="_int">
+		select count(*) from ( select distinct survey_cate from survey)
+	</select>
+	
+	<select id="selectStudentSurveyListCount" parameterType="string" resultType="_int">
+		select count(*) from  surveydis where student_code = #{student_code}
+	</select>
+	
+	<select id="selectStudentSurveyList" parameterType="Search" resultMap="resultSurveyList">
+		select * from (
+						select rownum rum, d.survey_no, s.survey_cate from surveydis d
+						left join (select survey_no, survey_cate
+						from survey
+						group by survey_cate, survey_no) s on d.survey_no = s.survey_no
+						where status = 'N' and student_code = #{keyword})
+		where rum between #{startRow} and #{endRow}
+	</select>
+	
+	<select id="selectSurveyList" parameterType="Paging" resultMap="resultSurveyList">
+		select * from ( select rownum rnum, survey_no, survey_cate, survey_date from (SELECT survey_no, survey_cate, MAX(survey_date) as survey_date
+						FROM survey
+						GROUP BY survey_cate, survey_no
+						order by survey_date desc))
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<select id="selectSurvCateSurveyList" parameterType="string" resultMap="resultSurveyList">
+		select * from survey where survey_cate = #{surv_cate}
+	</select>
+		
+	<select id="selectResultSurveyCate" parameterType="string" resultMap="resultSurvey">
+		select distinct survey_no, survey_cate from surveyresult
+		where class_code = #{classCode}
+	</select>
+	
+	<select id="selectFacilityResult" parameterType="string" resultMap="resultChart">
+		select s.survey1, s.survey2, s.survey3, s.survey4, s.survey5,  
+		r.answer1, r.answer2, r.answer3, r.answer4, r.answer5 from surveyresult r 
+		left join survey s on r.survey_no = s.survey_no  
+		and r.survey_cate = s.survey_cate and r.survey_type = s.survey_type 
+		where r.survey_no = #{survno}
+		and r.survey_type = '시설'
+	</select>
+	
+	<select id="selectTeacherResult" parameterType="string" resultMap="resultChart">
+		select s.survey1, s.survey2, s.survey3, s.survey4, s.survey5, r.answer1, r.answer2, r.answer3, r.answer4, r.answer5 from surveyresult r
+		left join survey s on r.survey_no = s.survey_no and r.survey_cate = s.survey_cate and r.survey_type = s.survey_type
+		where r.survey_no = #{survno}
+		and r.survey_type = '교사'
+	</select>
+	
+	<select id="selectEtcResult" parameterType="string" resultMap="resultChart">
+		select s.survey1, s.survey2, s.survey3, s.survey4, s.survey5, r.answer1, r.answer2, r.answer3, r.answer4, r.answer5 from surveyresult r
+		left join survey s on r.survey_no = s.survey_no and r.survey_cate = s.survey_cate and r.survey_type = s.survey_type
+		where r.survey_no = #{survno}
+		and r.survey_type = '기타'
+	</select>
+	
+	<update id="updateSurvey" parameterType="Survey">
+		update survey set survey1 = #{survey1}, survey2 = #{survey2}, survey3 = #{survey3}, survey4 = #{survey4}, survey5 = #{survey5}
+		where survey_type = #{survey_type} and survey_cate = #{survey_cate}
+	</update>
+	
+	<update id="updateStatus" parameterType="ResultSurvey">
+		update surveydis set status = 'Y'  
+		where student_code = #{student_code} and survey_no = #{survey_no} 
+	</update>
+	
+	<insert id="insertSurvey" parameterType="Survey">
+		insert into Survey values (#{survey_no}, #{survey_cate}, #{survey_type}, sysdate, #{survey1},#{survey2},#{survey3},#{survey4},#{survey5})
+	</insert>
+	
+	<insert id="insertStartSurvey" parameterType="StartSurvey">
+		insert into surveydis values (#{survNo}, #{student_code}, #{class_code}, default)
+	</insert>
+	
+	<insert id="insertResultSurvey" parameterType="ResultSurvey">
+		insert into surveyresult values (#{survey_no}, #{survey_cate}, #{survey_type}, #{answer1}, #{answer2}, #{answer3}, #{answer4}, #{answer5}, #{class_code}, #{student_code})
+	</insert>
+	
+	<delete id="deleteSurvey" parameterType="string">
+		delete from survey where survey_cate = #{surveycate}
+	</delete>
+
+</mapper>

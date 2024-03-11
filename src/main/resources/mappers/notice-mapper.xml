@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="noticeMapper">
+
+	<resultMap type="Notice" id="resultNotice">
+		<result property="notice_no" column="NOTICE_NO" />
+		<result property="notice_title" column="NOTICE_TITLE" />
+		<result property="notice_author" column="NOTICE_AUTHOR" />
+		<result property="notice_date" column="NOTICE_DATE" />
+		<result property="notice_content" column="NOTICE_CONTENT" />
+		<result property="notice_count" column="NOTICE_COUNT" />
+	</resultMap>
+
+	<!-- 비교연산자를 쿼리문에 그냥 사용하면 태그 앨리먼트 꺽쇠괄호 등(<, >, &)과 혼동하는 문제가 발생할 수 있음. 이 문제를 
+		미연에 방지하기 위해 xml 코드 중 xml parser 에 의해 해석하지 말고, 문장 그대로 해석하라는 뜻으로 <![CDATA[ 
+		쿼리문장 ]]> 사용함 -->
+
+	<insert id="insertNotice" parameterType="Notice">
+		INSERT INTO NOTICE
+		VALUES(NOTICE_SEQ.NEXTVAL, #{notice_title}, 
+		#{notice_author}, SYSDATE, #{notice_content}, 
+		0)
+	</insert>
+
+	<select id="selectNoticeList" parameterType="Paging" resultMap="resultNotice">
+		SELECT *
+		FROM (SELECT ROWNUM RNUM, NOTICE_NO, NOTICE_TITLE, 
+		NOTICE_AUTHOR, NOTICE_DATE, NOTICE_CONTENT, 
+		NOTICE_COUNT
+		FROM (SELECT *
+		            FROM NOTICE
+		            ORDER BY NOTICE_DATE DESC, NOTICE_NO DESC))
+		WHERE RNUM BETWEEN #{ startRow } and #{ endRow }
+	</select>
+
+	<select id="selectNew5Notice" resultMap="resultNotice">
+		<![CDATA[
+		SELECT * 
+		FROM (SELECT ROWNUM RNUM, NOTICE_NO, NOTICE_TITLE, NOTICE_DATE 
+		FROM ( SELECT * FROM NOTICE  
+		       ORDER BY NOTICE_DATE DESC)) 
+		WHERE RNUM >= 1 AND RNUM <= 5
+		]]>
+	</select>
+	
+	<select id="selectListCount" resultType="_int">
+		select count(*) from notice
+	</select>
+	
+	<select id="selectNoticeDetail" parameterType="_int" resultMap="resultNotice">
+		SELECT *
+		FROM NOTICE
+		WHERE NOTICE_NO = #{notice_no}
+	</select>
+	
+	<update id="updateReadCount" parameterType="_int">
+		UPDATE NOTICE 
+		SET NOTICE_COUNT = NOTICE_COUNT + 1 
+		WHERE NOTICE_NO = #{ notice_no }
+	</update>
+	
+	<update id="updateNotice" parameterType="Notice">
+		UPDATE NOTICE 
+		SET NOTICE_TITLE = #{notice_title}, 
+			NOTICE_CONTENT = #{notice_content}
+		WHERE NOTICE_NO = #{notice_no}
+	</update>
+</mapper>

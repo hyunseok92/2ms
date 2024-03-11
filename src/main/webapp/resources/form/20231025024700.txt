@@ -1,0 +1,80 @@
+[스프링에서 파이썬 실행하기]
+
+1. 실행할 파이썬 파일을 .exe 파일로 만들기
+ - 먼저 크롤링 코드를 하나의 py 파일로 작성함
+ - 실행파일을 만들기 위한 패키지 추가 설치함 : pyinstaller
+ - 파이참 Terminal 창 열기
+	> pyinstaller --onefile 소스파일명.py --hidden-import pywintypes
+ - 해당 크롤링 프로젝트 안에 생성된 dist 폴더 아래에 소스파일명.exe 파일 생성 확인함
+ - window 파일 탐색기에서 해당 exe 파일을 찾아서 더블클릭해서 실행해 봄
+	> sql developer 툴에서 해당 테이블에 크롤링 결과 저장 확인함
+ - 정상 작동이 확인되었으며, exe 파일 실행시 검은색 콘솔창이 나타나지 않게 하려면
+	> 해당 크롤링 프로젝트 안에 생성된 소스파일명.spec 파일 열기함
+	> 파일 안의 내용 중 console=True, 를 False 로 바꿔줌
+	
+	.......
+	exe = EXE(
+	....... 
+	 console=False,   
+	........
+ - 수정 후 저장하고 spec 파일 닫음
+ - 다시 파이참 터미널에서 아래의 명령을 한번 실행함
+	> pyinstaller 소스파일명.spec
+ -  sql developer 툴에서 해당 테이블에 크롤링 결과 저장된 데이터 모두 삭제함 
+	delete from 테이블명;  
+	commit;
+	select * from 테이블명;
+ - window 파일 탐색기에서 해당 exe 파일을 찾아서 더블클릭해서 실행해 봄 > 검은 콘솔창이 나타나지 않는지 확인함
+	> sql developer 툴에서 해당 테이블에 크롤링 결과 저장 확인함
+	select * from 테이블명;
+
+2. 스프링 Controller method 에서 ProcessBuilder 로 실행시키기
+ - 먼저 만들어진 exe 파일 하나만 복사해서, 
+   webapp/resources 폴더 아래에 python 폴더 만들고, 그 아래에 exe 파일 붙여넣기함
+ - 파이썬 구동을 위한 별도의 컨트롤러용 패키지를 만들기
+   예> org.ict.first.python.controller
+ - 만들어진 패키지 안에 Controller 클래스를 하나 만들기
+   예> PythonController
+ - 뷰에서 요청을 받아서 구동할 메소드 작성하기
+   예> 아래의 코드 참조함
+
+package org.ict.first.python.controller;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+public class PythonController {
+	private static final Logger logger = LoggerFactory.getLogger(PythonController.class);
+	
+	@RequestMapping("runCrawling.do")
+	public String runCrawlingMethod(HttpServletRequest request) throws IOException, InterruptedException {
+
+		String scriptPath = request.getSession().getServletContext().getRealPath(
+				"/resources/python/crawling_naver_movie.exe");
+		
+		ProcessBuilder pb = new ProcessBuilder(scriptPath);
+		Process p = pb.start();	
+	
+		return "redirect:main.do";  //요청 성공시 바뀔 뷰페이지 또는 request url 지정함
+	}
+}
+
+
+` -  sql developer 툴에서 해당 테이블에 크롤링 결과 저장된 데이터 모두 삭제함 
+	delete from 테이블명;  
+	commit;
+	select * from 테이블명;
+ - => tomcat restart > 브라우저에서 실행 작동시킴
+	> sql developer 툴에서 해당 테이블에 크롤링 결과 저장 확인함
+	select * from 테이블명;

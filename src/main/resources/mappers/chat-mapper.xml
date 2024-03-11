@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="chatMapper">
+
+	<resultMap type="ChatRooms" id="ChatRooms">
+		<result property="chat_room" column="CHAT_ROOM"/>
+		<result property="prof_code" column="PROF_CODE"/>
+		<result property="student_code" column="STUDENT_CODE"/>
+		<result property="prof_name" column="PROF_NAME"/>
+		<result property="student_name" column="STUDENT_NAME"/>
+	</resultMap>
+	
+	<resultMap type="Chatting" id="Chatting">
+		<result property="chat_room" column="CHAT_ROOM" />
+		<result property="chat_talker" column="CHAT_TALKER" />
+		<result property="chat_content" column="CHAT_CONTENT" />
+		<result property="chat_time" column="CHAT_TIME" />
+		<result property="chat_readcount" column="CHAT_READCOUNT" />
+		<result property="chat_date" column="CHAT_DATE" />
+		<result property="chat_talker_name" column="CHAT_TALKER_NAME" />
+	</resultMap>	
+	
+	<resultMap type="ChatList" id="ChatList">
+		<result property="chat_room" column="CHAT_ROOM" />
+		<result property="chat_talker" column="CHAT_TALKER" />
+		<result property="chat_content" column="CHAT_CONTENT" />
+		<result property="chat_time" column="CHAT_TIME" />
+		<result property="chat_readcount" column="CHAT_READCOUNT" />
+		<result property="chat_date" column="CHAT_DATE" />
+		<result property="chat_talker_name" column="CHAT_TALKER_NAME" />
+		<result property="student_name" column="STUDENT_NAME"/>
+		<result property="prof_code" column="PROF_CODE"/>
+		<result property="student_code" column="STUDENT_CODE"/>
+	</resultMap>	
+	<!-- Select Start -->
+	<select id="selectChatroomList" parameterType="string" resultMap="ChatList">
+		SELECT CHAT_ROOM, CHAT_TALKER, CHAT_CONTENT, CHAT_TIME, CHAT_READCOUNT, CHAT_DATE, CHAT_TALKER_NAME, STUDENT_NAME, PROF_CODE, STUDENT_CODE
+		FROM (
+				SELECT CC.CHAT_ROOM, CHAT_TALKER, CHAT_CONTENT, CHAT_TIME, CHAT_READCOUNT, CHAT_DATE, CHAT_TALKER_NAME, CR.STUDENT_NAME, CR.PROF_CODE, CR.STUDENT_CODE, 
+				    		ROW_NUMBER() OVER(PARTITION BY CC.CHAT_ROOM ORDER BY TO_DATE(CC.CHAT_DATE || ' ' || CC.CHAT_TIME, 'dd/mm/yy hh24:mi:ss') DESC) AS RN
+				FROM CHAT_CONTENT CC
+				LEFT JOIN CHATROOM CR ON CC.CHAT_ROOM = CR.CHAT_ROOM)        
+		WHERE RN = 1 AND CHAT_ROOM IN (SELECT CHAT_ROOM FROM CHATROOM WHERE PROF_CODE = #{ prof_code })
+		ORDER BY CHAT_DATE DESC, CHAT_TIME DESC
+	</select>
+	
+	<select id="selectChattingList" parameterType="string" resultMap="ChatList">
+		SELECT CC.CHAT_ROOM, CHAT_TALKER, CHAT_CONTENT, CHAT_TIME, CHAT_READCOUNT, CHAT_DATE, CHAT_TALKER_NAME, STUDENT_NAME, PROF_CODE, STUDENT_CODE
+        FROM CHAT_CONTENT CC
+        LEFT JOIN CHATROOM CR ON CC.CHAT_ROOM = CR.CHAT_ROOM
+        WHERE CR.STUDENT_CODE = #{ student_code }
+        ORDER BY CHAT_DATE , CHAT_TIME
+	</select>
+	
+	<select id="selectstudentchatroom" parameterType="string" resultMap="ChatRooms">
+		SELECT *
+		FROM CHATROOM 
+		WHERE student_code = #{ student_code }
+	</select>
+	
+	<select id="selectteacherchatroom" parameterType="ChatRooms" resultMap="ChatRooms">
+		SELECT *
+		FROM CHATROOM 
+		WHERE chat_room = #{ chat_room } AND prof_code = #{ prof_code } AND student_code = #{ student_code }
+	</select>
+	<!-- Select End -->
+	<!-- Insert Start -->
+
+	<insert id="insertchatroomSTD" parameterType="string">
+		INSERT INTO CHATROOM (CHAT_ROOM, PROF_CODE, STUDENT_CODE, PROF_NAME, STUDENT_NAME)
+		SELECT CHATROOM_SEQ.NEXTVAL, T.PROF_CODE, S.STUDENT_CODE, T.NAME AS PROF_NAME, S.NAME AS STUDENT_NAME
+		FROM TEACHER T
+		LEFT JOIN DESIGNED_CLASS DC ON T.PROF_CODE = DC.PROF_CODE
+		LEFT JOIN STUDENT S ON DC.CLASS_CODE = S.CLASS_CODE
+		WHERE S.STUDENT_CODE = #{ student_code }
+	</insert>
+	
+	<insert id="insertchatroomTCH" parameterType="ChatRooms">
+		INSERT INTO CHATROOM
+			VALUES (CHATROOM_SEQ.NEXTVAL, #{ prof_code }, #{ student_code },
+			(SELECT NAME FROM TEACHER WHERE PROF_CODE = #{ prof_code }),
+			(SELECT NAME FROM STUDENT WHERE STUDENT_CODE = #{ student_code }))
+	</insert>
+	
+	<insert id="insertchat" parameterType="Chatting">
+		INSERT INTO CHAT_CONTENT
+		VALUES ( #{ chat_room }, #{ chat_talker }, #{ chat_content }, TO_CHAR(SYSDATE, 'HH24:MI:SS') ,1 , SYSDATE, #{ chat_talker_name } )
+	</insert>
+	
+	<!-- Insert End -->
+	<!-- Update Start -->
+
+	<!--  학생이 접속시 교사가 보낸 메세지들 읽음처리  -->
+	<update id="updatetmsReadCount" parameterType="ChatRooms">	
+		UPDATE CHAT_CONTENT CC
+		SET CC.CHAT_READCOUNT = 0
+		WHERE EXISTS (
+			    SELECT 1
+			    FROM CHATROOM CR
+			    WHERE CC.CHAT_ROOM = CR.CHAT_ROOM
+			    AND CC.CHAT_TALKER = #{ prof_code }
+			    AND CC.CHAT_TALKER_NAME =#{ prof_name })
+	</update>
+
+	<!--  교사가 접속시 학생이 보낸 메세지들 읽음처리  -->
+	<update id="updatesmsReadCount" parameterType="ChatRooms">	
+		UPDATE CHAT_CONTENT CC
+    	SET CC.CHAT_READCOUNT = 0
+	    WHERE EXISTS (
+	            SELECT 1
+	            FROM CHATROOM CR
+	            WHERE CC.CHAT_ROOM = CR.CHAT_ROOM
+	            AND CC.CHAT_TALKER = #{ student_code }
+	            AND CC.CHAT_TALKER_NAME = #{ student_name })
+	</update>
+	<update id="updatewebsocketReadCount" parameterType="Chatting">	
+		UPDATE CHAT_CONTENT
+		SET CHAT_READCOUNT = 0
+		WHERE CHAT_ROOM = #{ chat_room } AND CHAT_TALKER = #{ chat_talker } AND CHAT_TALKER_NAME = #{ chat_talker_name }
+	</update>
+	<!-- Update End -->
+
+</mapper>

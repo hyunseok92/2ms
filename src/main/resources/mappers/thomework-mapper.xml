@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="thomeworkMapper">
+	<resultMap type="THomework" id="resultTHomework">
+		<result column="HW_CODE" property="HWCode" />
+		<result column="PROF_CODE" property="teacherCode" />
+		<result column="HW_STARTDATE" property="HWStartDate" />
+		<result column="HW_ENDDATE" property="HWEndDate" />
+		<result column="T_HW_FILE" property="THWFile" />
+		<result column="T_HW_RFILE" property="THWRFile" />
+		<result column="T_HW_TITLE" property="THWTitle" />
+		<result column="T_HW_CONT" property="THWContent" />
+		<result column="CLASS_CODE" property="classCode" />
+		<result column="SUBJECT_NAME" property="teacherCode" />
+		<result column="NAME" property="teacherName" />
+		<result column="SUBJECT_CODE" property="subjectCode" />
+	</resultMap>
+	<insert id="insertTHomework" parameterType="THomework" >
+		insert into t_homework (HW_CODE, PROF_CODE, HW_STARTDATE, HW_ENDDATE, T_HW_TITLE, CLASS_CODE
+		<if test="THWContent == null and THWFile == null">
+			) values (hw_seq.nextval, #{teacherCode}, sysdate, #{HWEndDate}, #{THWTitle}, #{classCode})	
+		</if>
+		<if test="THWContent == null and THWFile != null">
+			, T_HW_FILE, T_HW_RFILE) values (hw_seq.nextval, #{teacherCode}, sysdate, #{HWEndDate}, #{THWTitle}, #{classCode}, #{THWFile}, #{THWRFile})
+		</if>
+		<if test="THWContent != null and THWFile == null">
+			, T_HW_CONT) values (hw_seq.nextval, #{teacherCode}, sysdate, #{HWEndDate}, #{THWTitle}, #{classCode}, #{THWContent})
+		</if>
+		<if test="THWContent != null and THWFile != null">
+			,T_HW_FILE, T_HW_RFILE, T_HW_CONT) values (hw_seq.nextval, #{teacherCode}, sysdate, #{HWEndDate}, #{THWTitle}, #{classCode}, #{THWFile}, #{THWRFile}, #{THWContent})
+		</if>
+	</insert>
+	<select id="selectTHWMethod" parameterType="string" resultMap="resultTHomework">
+		select * from t_homework where HW_CODE = #{HWCode}
+	</select>
+	<select id="selectTHomeworkPagingView" parameterType="Search" resultMap="resultTHomework">
+		select *
+    		from (select ROWNUM RNUM, hw_code, PROF_CODE, HW_STARTDATE, HW_ENDDATE,  T_HW_FILE, T_HW_RFILE, 
+		            T_HW_TITLE, T_HW_CONT, CLASS_CODE
+					from (select * from t_homework
+					where CLASS_CODE = #{keyword} 
+					order by HW_ENDDATE desc, HW_STARTDATE desc))
+		where rnum between #{ startRow } and #{ endRow }
+	</select>
+	<select id="selectTHomeworkViewCount" parameterType="string" resultType="_int">
+		select count(*)
+		from(select hw_code, PROF_CODE, HW_STARTDATE, HW_ENDDATE,  T_HW_FILE, T_HW_RFILE, 
+		            T_HW_TITLE, T_HW_CONT, CLASS_CODE
+				from t_homework
+				where CLASS_CODE = #{classCode})
+	</select>
+	<update id="updateTHomework" parameterType="THomework">
+		update t_homework set HW_ENDDATE = #{HWEndDate}, T_HW_TITLE = #{THWTitle}
+		<if test="THWContent == null and THWFile != null">
+			, T_HW_FILE = #{THWFile}, T_HW_RFILE = #{THWRFile}
+		</if>
+		<if test="THWContent != null and THWFile == null">
+			, T_HW_CONT = #{THWContent}, T_HW_FILE = null, T_HW_RFILE = null
+		</if>
+		<if test="THWContent != null and THWFile != null">
+			, T_HW_FILE = #{THWFile}, T_HW_RFILE = #{THWRFile}, T_HW_CONT = #{THWContent}
+		</if>
+			where hw_code = #{HWCode}
+	</update>
+	<delete id="deleteTHW" parameterType="string">
+		delete from t_homework where hw_code = #{HWCode}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

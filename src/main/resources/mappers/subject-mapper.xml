@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="subjectMapper">
+
+	<resultMap type="Subject" id="resultSubject">
+		<result property="subjectCode" column="SUBJECT_CODE" />
+		<result property="subjectName" column="SUBJECT_NAME" />
+		<result property="basicTime" column="BASIC_TIME" />
+		<result property="firstCategoryCode" column="FIRST_CATEGORY" />
+		<result property="firstCategoryName" column="FIRST_NAME" />
+		<result property="secondCategoryCode" column="SECOND_CATEGORY" />
+		<result property="secondCategoryName" column="SECOND_NAME" />
+		<result property="thirdCategoryCode" column="THIRD_CATEGORY" />
+		<result property="thirdCategoryName" column="THIRD_NAME" />
+		<result property="fourthCategoryCode" column="FOURTH_CATEGORY" />
+		<result property="fourthCategoryName" column="FOURTH_NAME" />
+	</resultMap>
+
+	<!-- 비교연산자를 쿼리문에 그냥 사용하면 태그 앨리먼트 꺽쇠괄호 등(<, >, &)과 혼동하는 문제가 발생할 수 있음. 이 문제를 
+		미연에 방지하기 위해 xml 코드 중 xml parser 에 의해 해석하지 말고, 문장 그대로 해석하라는 뜻으로 <![CDATA[ 
+		쿼리문장 ]]> 사용함 -->
+
+	<select id="selectSubjectList" resultMap="resultSubject">
+		SELECT *
+		FROM SUBJECT
+	</select>
+
+	<select id="selectFirstCateList" resultMap="resultSubject">
+		SELECT DISTINCT FIRST_NAME
+		FROM SUBJECT
+	</select>
+
+	<select id="selectSecondCateList" parameterType="string" resultMap="resultSubject">
+		SELECT DISTINCT SECOND_NAME
+		FROM SUBJECT
+		WHERE FIRST_NAME = #{ keyword }
+	</select>
+
+	<select id="selectThirdCateList" parameterType="string" resultMap="resultSubject">
+		SELECT DISTINCT THIRD_NAME
+		FROM SUBJECT
+		WHERE SECOND_NAME = #{ keyword }
+	</select>
+
+	<select id="selectFourthCateList" parameterType="string" resultMap="resultSubject">
+		SELECT DISTINCT FOURTH_NAME
+		FROM SUBJECT
+		WHERE THIRD_NAME = #{ keyword }
+	</select>
+
+	<select id="selectSubjCateList" parameterType="string" resultMap="resultSubject">
+		SELECT DISTINCT SUBJECT_NAME, BASIC_TIME, SUBJECT_CODE
+		FROM SUBJECT
+		WHERE FOURTH_NAME = #{ keyword }
+	</select>
+
+</mapper>
+
+
+
+
+
+

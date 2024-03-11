@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="quizMapper">
+
+	<resultMap type="Quiz_q" id="Quiz_q">
+		<result property="quiz_seq" column="QUIZ_SEQ" />
+		<result property="prof_code" column="PROF_CODE" />
+		<result property="quiz_content" column="QUIZ_CONTENT" />
+		<result property="quiz_date" column="QUIZ_DATE" />
+	</resultMap>
+
+	<resultMap type="Quiz_a" id="Quiz_a">
+		<result property="quiz_seq" column="QUIZ_SEQ" />
+		<result property="student_code" column="STUDENT_CODE" />
+		<result property="quiz_answer" column="QUIZ_ANSWER" />
+	</resultMap>
+
+	<resultMap id="resultstudent" type="Student">
+		<result property="name" column="NAME" />
+	</resultMap>
+	
+	<select id="selectReceiveQuiz" parameterType="string"
+		resultMap="Quiz_q">
+		SELECT QUIZ_SEQ, PROF_CODE, QUIZ_CONTENT
+		FROM(
+				SELECT QUIZ.QUIZ_SEQ, QUIZ.PROF_CODE, QUIZ.QUIZ_CONTENT, ROWNUM
+				FROM QUIZ
+				JOIN DESIGNED_CLASS DC ON QUIZ.PROF_CODE = DC.PROF_CODE
+				JOIN STUDENT STD ON DC.CLASS_CODE = STD.CLASS_CODE
+				WHERE STD.STUDENT_CODE = #{ student_code }
+				ORDER BY QUIZ.QUIZ_SEQ DESC)
+		WHERE ROWNUM = 1
+	</select>
+
+	<select id="selectQuizAnswered" parameterType="Quiz_a"
+		resultMap="Quiz_a">
+		SELECT * FROM QUIZ_ANSWER
+		WHERE QUIZ_SEQ = #{ quiz_seq } AND STUDENT_CODE = #{ student_code } AND ROWNUM = 1
+	</select>
+		
+	<select id="selectQuizAnswerList" parameterType="Quiz_q"
+		resultMap="resultstudent">
+		SELECT NAME
+		FROM STUDENT 
+		WHERE STUDENT_CODE IN (
+				SELECT STUDENT_CODE 
+				FROM QUIZ_ANSWER
+				WHERE QUIZ_SEQ = (
+						SELECT QUIZ_SEQ
+						FROM QUIZ
+						WHERE PROF_CODE = #{ prof_code } AND QUIZ_CONTENT = #{ quiz_content }))
+	</select>
+		
+	<!-- 퀴즈 출제 insert -->
+	<insert id="insertQuiz" parameterType="Quiz_q">
+		insert into quiz 
+		values ((quiz_seq.nextval), #{ prof_code }, #{ quiz_content }, sysdate)
+	</insert>
+	<insert id="insertQuizAnswer" parameterType="Quiz_a">
+		insert into quiz_answer
+		values (#{ quiz_seq }, #{ student_code }, #{ quiz_answer })
+	</insert>
+
+
+</mapper>

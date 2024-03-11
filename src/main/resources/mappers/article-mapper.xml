@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="articleMapper">
+
+	<resultMap type="Article" id="resultArticle">
+		<result property="category" column="CATEGORY" />
+		<result property="title" column="TITLE" />
+		<result property="content" column="CONTENT" />
+		<result property="urlAddress" column="URL_ADDRESS" />
+	</resultMap>
+
+	<resultMap type="Article" id="resultArticleCate">
+		<result property="category" column="CATEGORY" />
+	</resultMap>
+
+	<!-- 비교연산자를 쿼리문에 그냥 사용하면 태그 앨리먼트 꺽쇠괄호 등(<, >, &)과 혼동하는 문제가 발생할 수 있음. 이 문제를 
+		미연에 방지하기 위해 xml 코드 중 xml parser 에 의해 해석하지 말고, 문장 그대로 해석하라는 뜻으로 <![CDATA[ 
+		쿼리문장 ]]> 사용함 -->
+
+	<select id="selectFirstCate" resultMap="resultArticle">
+		SELECT *
+		FROM ARTICLE
+		WHERE CATEGORY = 'IoT'
+	</select>
+
+	<select id="selectSecondCate" resultMap="resultArticle">
+		SELECT *
+		FROM ARTICLE
+		WHERE CATEGORY = '글로벌 트렌드'
+	</select>
+
+	<select id="selectThirdCate" resultMap="resultArticle">
+		SELECT *
+		FROM ARTICLE
+		WHERE CATEGORY = '개발자'
+	</select>
+
+	<select id="selectFourthCate" resultMap="resultArticle">
+		SELECT *
+		FROM ARTICLE
+		WHERE CATEGORY = '미래기술'
+	</select>
+
+	<select id="selectFifthCate" resultMap="resultArticle">
+		SELECT *
+		FROM ARTICLE
+		WHERE CATEGORY = '기업 문화'
+	</select>
+
+	<select id="selectArticleCategory" resultMap="resultArticleCate">
+		SELECT DISTINCT CATEGORY
+		FROM ARTICLE
+	</select>
+
+</mapper>
+
+
+
+
+
+

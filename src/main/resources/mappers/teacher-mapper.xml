@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="teacherMapper">
+
+	<resultMap type="Teacher" id="resultteacher">
+		<result property="prof_Code" column="PROF_CODE" />
+		<result property="name" column="NAME" />
+		<result property="resident_Number" column="RESIDENT_NUMBER" />
+		<result property="email" column="EMAIL" />
+		<result property="id" column="ID" />
+		<result property="pwd" column="PWD" />
+		<result property="photo" column="PHOTO" />
+		<result property="cv" column="CV" />
+		<result property="certificate" column="CERTIFICATE" />
+		<result property="signAture_Img" column="SIGNATURE_IMG" />
+		<result property="modified_Date" column="MODIFIED_DATE" />
+		<result property="inactive_OR_Not" column="INACTIVE_OR_NOT" />
+		<result property="grade" column="GRADE" />
+		<result property="phone" column="PHONE" />
+		<result property="class_code" column ="CLASS_CODE"/>
+	</resultMap>
+
+	<select id="selectLogin" parameterType="Teacher" resultMap="resultteacher">
+		select * from teacher 
+		where ID = #{ id } and PWD = #{ pwd } 
+	</select>
+	
+	<select id="selectTeacher" parameterType="string" resultMap="resultteacher">
+		select * from teacher where ID = #{ id } and inactive_OR_Not = 'Y'
+	</select>
+	
+	<select id="searchTeacherCode" parameterType="string" resultType="string">
+		select name from teacher where class_code = #{code}
+	</select>
+	
+		<select id="searchTeacher" parameterType="Teacher" resultMap="resultteacher">
+		select * from teacher where name = #{name} and RESIDENT_NUMBER = #{resident_Number}
+	</select>
+	
+	
+		<select id="selectTeacher2" parameterType="Teacher" resultMap="resultteacher">
+		select * from teacher where ID = #{ id } 
+	</select>
+	
+	<select id="selectCountTeacher" parameterType="string" resultType="_int">
+		select count(*) from teacher where ID = #{ id } 
+	</select>
+	
+	<select id="selectCountAllteacher" resultType="_int">
+		select count(*) from teacher where grade = 'T'
+	</select>
+	
+	<select id="selectTeacherList" resultMap="resultteacher">
+		select prof_code, name 
+		from teacher
+		where class_code is null
+		and grade = 'T'
+	</select>
+	
+	<select id="selectPageTeacherList" parameterType="Paging" resultMap="resultteacher">
+		select * from (
+		select rownum rnum, prof_code, name, phone, resident_number, email, photo, cv, certificate, signature_img, inactive_or_not, class_code from (select t.prof_code, t.name, t.phone, t.resident_number, t.email, t.photo, t.cv, t.certificate, t.signature_img, t.inactive_or_not, d.class_name as class_code from teacher t
+		left join designed_class d on t.class_code = d.class_code
+		where t.grade = 'T') make )
+		where rnum between #{startRow} and #{endRow}
+	
+	</select>
+	
+	<select id="searchTeacherListCount" parameterType="Search" resultType="_int">
+		select count(*) from teacher
+		where name like '%' || #{keyword} || '%'
+	</select>
+	
+	<select id="searchTeacherList" parameterType="Search" resultMap="resultteacher">
+		select * from (
+		select rownum rnum, prof_code, name, phone, resident_number, email, photo, cv, certificate, signature_img, inactive_or_not, class_code from (select t.prof_code, t.name, t.phone, t.resident_number, t.email, t.photo, t.cv, t.certificate, t.signature_img, t.inactive_or_not, d.class_name as class_code from teacher t
+		left join designed_class d on t.class_code = d.class_code
+		where t.grade = 'T' and t.name like '%' || #{keyword} || '%') make )
+		where rnum between #{startRow} and #{endRow}
+	</select>
+
+	<insert id="insertTeacher" parameterType="Teacher">
+		insert into teacher 
+		values (prof_seq.nextval, #{ name }, #{ resident_Number }, #{ email }, CONCAT('T', prof_seq.nextval), #{ pwd }, #{ photo }, 
+		#{ cv },#{ certificate }, #{signAture_Img}, sysdate, 'Y', 'T',#{phone}, #{class_code})
+		
+	</insert>
+	
+	<update id="updateTeacher" parameterType="Teacher">
+		update teacher 
+		set  NAME = #{ name }, PWD = #{pwd},
+			PHONE = #{ phone }, EMAIL = #{ email }, PHOTO = #{ photo }
+		where ID = #{ id }
+	</update>
+	
+	<update id="updatePw" >
+		update teacher set pw = #{pw} where id = #{id}
+	</update>
+
+	<update id="updateTeacher2" parameterType="Teacher">
+		update teacher 
+		set   PWD = #{pwd},
+			 MODIFIED_DATE = sysdate 
+		where ID = #{id}
+	</update>
+
+	<update id="updateTeacherStatus" parameterType="Teacher">
+    update teacher set inactive_OR_Not = #{inactive_OR_Not}
+    where prof_code = #{prof_Code}
+	</update>
+
+	<update id="updateTeacherClassCode" parameterType="string">
+		UPDATE TEACHER
+		SET CLASS_CODE = #{ classCode }
+		WHERE PROF_CODE = #{ profCode }
+
+	</update>
+
+	<delete id="deleteTeacher" parameterType="string">
+		delete from teacher where Id = #{ id }
+    </delete>
+</mapper>
+
+
+
+
+
+

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="designedSubjectMapper">
+
+	<resultMap type="DesignedSubject" id="resultDesignedSubject">
+		<result property="subjectCode" column="SUBJECT_CODE" />
+		<result property="subjectName" column="SUBJECT_NAME" />
+		<result property="classCode" column="CLASS_CODE" />
+		<result property="setTime" column="SET_TIME" />
+		<result property="subjIndex" column="SUBJ_INDEX" />
+	</resultMap>
+
+	<insert id="insertDesignedSubject" parameterType="DesignedSubject">
+		INSERT INTO DESIGNED_SUBJECT
+		VALUES (#{subjectCode}, #{classCode}, #{setTime}, #{subjIndex}, #{subjectName})
+	</insert>
+
+	<select id="selectDesignedSubject" parameterType="string" 
+	resultMap="resultDesignedSubject">
+		SELECT *
+		FROM DESIGNED_SUBJECT
+		WHERE CLASS_CODE = #{classCode}
+		ORDER BY SUBJ_INDEX ASC
+	</select>
+
+	<select id="selectOneDS" parameterType="string" 
+	resultMap="resultDesignedSubject">
+		SELECT *
+		FROM DESIGNED_SUBJECT
+		WHERE CLASS_CODE = #{classCode} AND SUBJECT_NAME = #{subjectName}
+	</select>
+
+	<update id="updateDSIndex" parameterType="DesignedSubject">
+		UPDATE DESIGNED_SUBJECT
+		SET SUBJ_INDEX = #{subjIndex}
+		WHERE CLASS_CODE = #{classCode} AND SUBJECT_NAME = #{subjectName}
+	</update>
+</mapper>

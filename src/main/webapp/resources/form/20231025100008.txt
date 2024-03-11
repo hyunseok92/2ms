@@ -1,0 +1,114 @@
+/*
+	랜덤 문자열 만드는 함수 int 값으로 자리수 설정가능
+
+**/
+
+private static final String CHAR_SET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+	public static String generateRandomString(int length) {
+		StringBuilder randomString = new StringBuilder(length);
+		SecureRandom secureRandom = new SecureRandom();
+
+		for (int i = 0; i < length; i++) {
+			int randomIndex = secureRandom.nextInt(CHAR_SET.length());
+			char randomChar = CHAR_SET.charAt(randomIndex);
+			randomString.append(randomChar);
+		}
+
+		return randomString.toString();
+	}
+
+/**
+	메일 보내는 함수
+
+*/
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.stereotype.Service;
+
+@Service("mailService")
+public class MailService {
+
+	@Autowired
+	private MailSender mailSender;
+	
+	public void sendEmail(String toAddress, String fromAddress,
+					String subject, String msgBody) {
+		SimpleMailMessage smm = new SimpleMailMessage();
+		smm.setFrom(fromAddress);
+		smm.setTo(toAddress);
+		smm.setSubject(subject);
+		smm.setText(msgBody);
+		
+		mailSender.send(smm);
+	}
+}
+
+
+/**
+		메일 함수 예제
+*/
+
+
+@RequestMapping("mail.do")
+	public ModelAndView sendEmail(String id, String email) throws Exception {
+		ModelAndView mv = new ModelAndView();
+		
+		String addr = "보내는 사람 메일";
+		
+		String subject = "[😀😀] 알림메일 입니다.";
+		
+		String body = "안녕하세요?\r\n소통해요~\r\n SMTP메일 테스트입니다.";
+		
+		mailService.sendEmail(email, addr, subject, body);
+		
+		mv.setViewName("main");
+		return mv;
+	}
+
+
+/**
+ servlet-context.xml 에 추가하는 클래스
+
+*/
+
+<beans:bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<beans:property name="host" value="smtp.gmail.com"/>
+		<beans:property name="port" value="587"/>
+		<beans:property name="defaultEncoding" value="utf-8"/>
+		<beans:property name="username" value="본인 구글 메일"/>
+		<beans:property name="password" value="앱 비밀번호 만드는방법 정선이 부르샘"/>
+		<beans:property name="javaMailProperties">
+			<beans:props>
+				<beans:prop key="mail.transport.protocol">smtp</beans:prop>
+				<beans:prop key="mail.smtp.auth">true</beans:prop> <!-- 2단계본인인증을 했으니 보안적으로 true라고 준다 -->
+				<beans:prop key="mail.smtp.starttls.enable">true</beans:prop>
+				<beans:prop key="mail.debug">true</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+	
+	<context:component-scan base-package="spring.service" />
+
+
+
+/**
+
+pom.xml 에 추가하는 jar 파일 
+
+*/
+
+
+<!-- 메일 이용-->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="homeworkMapper">
+	<resultMap type="Homework" id="resultHomework">
+		<result column="HW_CODE" property="HWCode" />
+		<result column="S_HW_DATE" property="SHWDate" />
+		<result column="S_HW_CONT" property="HWcontent" />
+		<result column="S_HW_FILE" property="SHWFile" />
+		<result column="HW_RST" property="HWRST" />
+		<result column="HW_COME" property="HWComent" />
+		<result column="STUDENT_CODE" property="studentCode" />
+		<result column="PROF_CODE" property="teacherCode" />
+		<result column="S_HW_RFILE" property="SHWRFile" />
+		<result column="CLASS_NAME" property="className" />
+		<result column="CLASS_CODE" property="classCode" />
+	</resultMap>
+	<insert id="insertHomework" parameterType="Homework">
+		insert into homework (HW_CODE, PROF_CODE, S_HW_DATE, STUDENT_CODE, HW_RST, CLASS_CODE
+		<if test="HWcontent == null and SHWFile == null">
+			) values (#{HWCode}, #{teacherCode}, sysdate, #{studentCode}, #{HWRST}, #{classCode})
+		</if>
+		<if test="HWcontent == null and SHWFile != null">
+			, S_HW_FILE, S_HW_RFILE) values (#{HWCode}, #{teacherCode}, sysdate, #{studentCode}, #{HWRST}, #{classCode}, #{SHWFile}, #{SHWRFile})
+		</if>
+		<if test="HWcontent != null and SHWFile == null">
+			, S_HW_CONT) values (#{HWCode}, #{teacherCode}, sysdate, #{studentCode}, #{HWRST}, #{classCode}, #{HWcontent})
+		</if>
+		<if test="HWcontent != null and SHWFile != null">
+			,S_HW_FILE, S_HW_RFILE, S_HW_CONT) values (#{HWCode}, #{teacherCode}, sysdate, #{studentCode}, #{HWRST}, #{classCode}, #{SHWFile}, #{SHWRFile}, #{HWcontent})
+		</if>
+	</insert>
+	<select id="selectHomework" parameterType="string" resultMap="resultHomework">
+		select * from homework where STUDENT_CODE = #{studentCode}
+	</select>
+	<select id="selectSHWMethod" parameterType="Homework" resultMap="resultHomework">
+		select * from homework where HW_CODE = #{HWCode} and STUDENT_CODE = #{studentCode}
+	</select>
+	<select id="selectHomeworkList" parameterType="Homework" resultMap="resultHomework">
+		select * from homework where HW_CODE = #{HWCode}
+	</select>
+	<update id="updateSHomework" parameterType="Homework">
+		update homework set S_HW_DATE = sysdate
+		<if test="HWcontent == null and SHWFile != null">
+			, S_HW_FILE = #{SHWFile}, S_HW_RFILE = #{SHWRFile}
+		</if>
+		<if test="HWcontent != null and SHWFile == null">
+			, S_HW_CONT = #{HWcontent}, S_HW_RFILE = null, S_HW_FILE = null
+		</if>
+		<if test="HWcontent != null and SHWFile != null">
+			, S_HW_FILE = #{SHWFile}, S_HW_RFILE = #{SHWRFile}, S_HW_CONT = #{HWcontent}
+		</if>
+			where hw_code = #{HWCode} and STUDENT_CODE = #{studentCode}
+	</update>
+	<delete id="deleteSHW" parameterType="Homework">
+		delete from homework where hw_code = #{HWCode} and STUDENT_CODE = #{studentCode}
+	</delete>
+	
+	<update id="updatehwresultMethod" parameterType="Homework">
+		update homework set HW_RST = #{HWRST}
+		<if test="HWComent != null">
+			, HW_COME = #{HWComent}
+		</if>
+		where hw_code = #{HWCode} and STUDENT_CODE = #{studentCode}
+	</update>
+
+</mapper>

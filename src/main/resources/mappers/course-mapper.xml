@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="courseMapper">
+
+	<resultMap type="Course" id="resultCourse">
+		<result property="classCode" column="CLASS_CODE" />
+		<result property="className" column="CLASS_NAME" />
+		<result property="classGoal" column="CLASS_GOAL" />
+		<result property="uploadDate" column="UPLOAD_DATE" />
+		<result property="executeDate" column="EXECUTE_DATE" />
+		<result property="confirmed" column="CONFIRMED" />
+		<result property="profCode" column="PROF_CODE" />
+		<result property="profConfirm" column="PROF_CONFIRM" />
+	</resultMap>
+	<resultMap type="Course" id="resultCourseCode">
+		<result property="classCode" column="CLASS_CODE" />
+	</resultMap>
+
+	<resultMap type="Course" id="resultCourse1">
+	<result property="classCode" column="CLASS_CODE" />
+	<result property="className" column="CLASS_NAME" />
+	<result property="classGoal" column="CLASS_GOAL" />
+	<result property="uploadDate" column="UPLOAD_DATE" />
+	<result property="executeDate" column="EXECUTE_DATE" />
+	<result property="confirmed" column="CONFIRMED" />
+	<result property="profCode" column="PROF_CODE" />
+	<result property="profConfirm" column="PROF_CONFIRM" /> 
+	<result property="name" column="NAME" /> 
+	</resultMap>
+
+	<!-- 비교연산자를 쿼리문에 그냥 사용하면 태그 앨리먼트 꺽쇠괄호 등(<, >, &)과 혼동하는 문제가 발생할 수 있음. 이 문제를 
+		미연에 방지하기 위해 xml 코드 중 xml parser 에 의해 해석하지 말고, 문장 그대로 해석하라는 뜻으로 <![CDATA[ 
+		쿼리문장 ]]> 사용함 -->
+
+	<insert id="insertCourse" parameterType="Course">
+		INSERT INTO DESIGNED_CLASS
+		VALUES (CLASS_SEQ.NEXTVAL, #{ className }, #{ classGoal }, SYSDATE, 
+		TO_DATE(#{ executeDate }, 'YYYY-MM-DD'), DEFAULT, #{ profCode }, DEFAULT)
+	</insert>
+
+	<select id="selectCourseCode" parameterType="string" 
+		resultType="string">
+		SELECT CLASS_CODE
+		FROM DESIGNED_CLASS
+		WHERE CLASS_NAME = #{ className }
+	</select>
+	
+	<select id="selectCourseListCount" resultType="_int">
+		SELECT COUNT(*) 
+		FROM DESIGNED_CLASS
+	</select>
+	
+
+	<select id="searchCoursename" parameterType="string" resultType="string">
+		select class_name from designed_class where class_code = #{code}
+	</select>
+
+	<select id="selectOwnCourseListCount" resultType="_int">
+		SELECT COUNT(*) 
+		FROM DESIGNED_CLASS
+		WHERE PROF_CODE = #{ profCode }
+	</select>
+
+	<select id="selectCourseList" parameterType="Paging"
+		resultMap="resultCourse">
+		<![CDATA[
+		
+		SELECT *
+		FROM (SELECT ROWNUM RNUM, CLASS_CODE, CLASS_NAME, 
+		            CLASS_GOAL, UPLOAD_DATE, EXECUTE_DATE, CONFIRMED, 
+		            PROF_CODE, PROF_CONFIRM, NAME   
+		            FROM (SELECT D.CLASS_CODE, D.CLASS_NAME, 
+		                        D.CLASS_GOAL, D.UPLOAD_DATE, D.EXECUTE_DATE, D.CONFIRMED, 
+		                        D.PROF_CODE, D.PROF_CONFIRM, T.NAME
+		                        FROM DESIGNED_CLASS D, TEACHER T
+		                        WHERE D.PROF_CODE = T.PROF_CODE
+		                        ORDER BY UPLOAD_DATE DESC))
+		WHERE RNUM >= #{startRow} AND RNUM <= #{endRow}
+
+		]]>
+	</select>
+	
+	<select id="selectOwnCourseList" parameterType="Paging"
+		resultMap="resultCourse">
+		<![CDATA[
+		
+		SELECT *
+		FROM (SELECT ROWNUM RNUM, D.CLASS_CODE, D.CLASS_NAME, 
+				      D.CLASS_GOAL, D.UPLOAD_DATE, D.EXECUTE_DATE, D.CONFIRMED, 
+				      D.PROF_CODE, D.PROF_CONFIRM, T.NAME
+		            FROM DESIGNED_CLASS D, TEACHER T
+		            WHERE D.PROF_CODE = T.PROF_CODE)
+		WHERE RNUM >= #{startRow} AND RNUM <= #{endRow} AND PROF_CODE = #{ profCode }
+		ORDER BY UPLOAD_DATE DESC
+		
+		]]>
+	</select>
+	
+	<select id="selectSurvCouresName" resultMap="resultCourse">
+		select class_code, class_name from designed_class
+		where class_code in (select distinct(class_code) from surveyresult)
+	</select>
+	
+	<update id="updateCourseMethod" parameterType="Course">
+		UPDATE DESIGNED_CLASS
+		SET PROF_CONFIRM = #{profConfirm}
+		WHERE PROF_CODE = #{profCode}
+	</update>
+	
+	<update id="updateExecuteDateMethod" parameterType="Course">
+		UPDATE DESIGNED_CLASS
+		SET EXECUTE_DATE = #{executeDate}
+		WHERE CLASS_CODE = ${classCode}
+	</update>
+
+	<select id="selectCourseDetail" parameterType="string" 
+							resultMap="resultCourse1">
+		SELECT D.CLASS_CODE AS CLASS_CODE, D.CLASS_NAME AS CLASS_NAME, 
+		D.CLASS_GOAL AS CLASS_GOAL, D.UPLOAD_DATE AS UPLOAD_DATE, 
+		D.EXECUTE_DATE AS EXECUTE_DATE, D.CONFIRMED AS CONFIRMED, 
+		D.PROF_CODE AS PROF_CODE, D.PROF_CONFIRM AS PROF_CONFIRM, NAME
+		FROM DESIGNED_CLASS D
+		LEFT JOIN TEACHER T ON D.CLASS_CODE = T.CLASS_CODE
+		WHERE D.CLASS_CODE = #{ classCode } AND D.PROF_CODE = #{ profCode }
+	</select>
+
+	<select id="selectSCourseDetail" parameterType="string" 
+							resultMap="resultCourse1">
+		SELECT D.CLASS_CODE AS CLASS_CODE, D.CLASS_NAME AS CLASS_NAME, 
+		D.CLASS_GOAL AS CLASS_GOAL, D.UPLOAD_DATE AS UPLOAD_DATE, 
+		D.EXECUTE_DATE AS EXECUTE_DATE, D.CONFIRMED AS CONFIRMED, 
+		D.PROF_CODE AS PROF_CODE, D.PROF_CONFIRM AS PROF_CONFIRM, NAME
+		FROM DESIGNED_CLASS D
+		LEFT JOIN TEACHER T ON D.CLASS_CODE = T.CLASS_CODE
+		WHERE D.CLASS_CODE = #{ classCode }
+	</select>
+
+</mapper>
