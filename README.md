@@ -4,7 +4,18 @@
 
 ![banner](https://github.com/doowon13/2ms/assets/83566946/c36841b6-da13-48bb-9b27-927bff51f4bf)
 
+<h1><a href="https://www.canva.com/design/DAF_MBjNgUc/1os7Sj-20YjsCKVr74U49w/view?utm_content=DAF_MBjNgUc&utm_campaign=designshare&utm_medium=link&utm_source=editor">
+[ 프로젝트 포트폴리오 링크 ]
+</a> <-- Click!</h1>
 
+## Back-End 사용기술
+`Spring Legacy (MVC model 2)` `Java` `MyBatis` `Oracle DB` `Python` `Apache Tomcat`
+
+## Front-End 사용기술
+`JavaScript` `jQuery` `EL` `JSTL` `HTML5` `CSS3`
+
+## DB ERD Diagram
+![image](https://github.com/doowon13/2ms/assets/83566946/2de18a2f-a973-4720-8ba8-8d453255ab69)
 
 
 ## 프로젝트 기능
@@ -124,11 +135,4 @@
 <hr style="text-align:center; width:45%;">
 <br>
 
-## Back-End 사용기술
-`Spring Legacy (MVC model 2)` `Java` `MyBatis` `Oracle DB` `Python` `Apache Tomcat`
 
-## Front-End 사용기술
-`JavaScript` `jQuery` `EL` `JSTL` `HTML5` `CSS3`
-
-## DB ERD Diagram
-![image](https://github.com/doowon13/2ms/assets/83566946/2de18a2f-a973-4720-8ba8-8d453255ab69)
